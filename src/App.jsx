@@ -11,72 +11,102 @@ const novels = [
     name: "The Beauty of Earth",
     author: "John Doe",
     description: "A novel about the beauty of our planet.",
-    image: "/beauty-of-earth.jpg"
+    category: "Fiction",
+    image:"Beauty-of-earth.jpg"
   },
   {
     id: 2,
     name: "The Wonders of Nature",
     author: "Jane Smith",
-    description: "Discover the incredible wonders of nature."
+    category: "Science",
+    description: "Discover the incredible wonders of nature.",
+    image: "Wonders-of-nature.jpg"
   },
   {
     id: 3,
     name: "The Love of Humanity",
     author: "Bob Johnson",
-    description: "A story about compassion and humanity."
+    category: "Fiction",
+    description: "A story about compassion and humanity.",
+    image: "The-love-of-humanity.jpg"
   },
   {
     id: 4,
     name: "The Power of Imagination",
     author: "Alice Brown",
-    description: "A journey into the power of imagination."
+    category: "Fiction",
+    description: "A journey into the power of imagination.",
+    image: "The-power-of-imagination.jpg"
   },
   {
     id: 5,
     name: "The Joy of Storytelling",
     author: "Charlie Wilson",
-    description: "A celebration of stories and the people who tell them."
+    category: "Fiction",
+    description: "A celebration of stories and the people who tell them.",
+    image: "The-joy-of-storytelling.jpg"
+  },
+  {id: 6,
+    name: "The parables of Jesus",
+    author: "John Doe",
+    description: "A book about the parables of Jesus.",
+    category: "Religion",
+    image: "The-parables-of-Jesus.jpg"
+  },
+  {
+    id: 7,
+    name: "The Philosophy of Life",
+    author: "Jane Smith",
+    category: "Philosophy",
+    description: "A philosophical exploration of life and existence.",
+    image: "The-philosophy-of-life.jpg"
+  },
+  {
+    id: 8,
+    name: "The secret lovers",
+    author: "Alice Brown",
+    category: "Romance",
+    description: "A story about hidden love and its consequences.",
+    image: "The-secret-lovers.jpg"
   }
+
 ]
 
 function App() {
-  const [favorites, setFavorites] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState('All')
+
+const [favorites, setFavorites] = useState([])
+  const filteredNovels = selectedCategory === 'All'
+   ? novels
+   :selectedCategory === 'Favorites'
+   ? novels.filter((novel) => favorites.includes(novel.id))
+  : novels.filter((novel) => novel.category === selectedCategory)
+
 function toggleFavorite(novel) {
- if (favorites.includes(novel)) {
-    setFavorites(favorites.filter(favorites => favorites !== novel))
+  if (favorites.includes(novel.id)) {
+    setFavorites(favorites.filter(id => id !== novel.id))
   } else {
-    setFavorites([...favorites, novel])
- }}
+    setFavorites([...favorites, novel.id])
+  }
+}
   return (
     <div className="App">
       <nav className="nav">
     <h2 className="logo">NOVELLA</h2>
-  <ul style={{ listStyle: 'none' }}>
-    <li><Link to="/">All</Link></li>
-    <li><Link to="/romance">Romance</Link></li>
-    <li><Link to="/Fiction">Fiction</Link></li>
-    <li><Link to="/philosophy">Philosophy</Link></li>
-    <li><Link to="/science">Science</Link></li>
-    <li><Link to="/religion">Religion</Link></li>
-    <li><Link to="/favorites">Favorites</Link></li>
+   <ul className="nav-links">
+    <li><button onClick={()=>setSelectedCategory('All')}>All</button></li>
+    <li><button onClick={()=>setSelectedCategory('Religion')}>Religion</button></li>
+    <li><button onClick={()=>setSelectedCategory('Science')}>Science</button></li>
+    <li><button onClick={()=>setSelectedCategory('Romance')}>Romance</button></li>
+    <li><button onClick={()=>setSelectedCategory('Fiction')}>Fiction</button></li>
+    <li><button onClick={()=>setSelectedCategory('Philosophy')}>Philosophy</button></li>
+    <li><button onClick={()=>setSelectedCategory('Favorites')}>Favorites</button></li>
   </ul>
 </nav>
 <Routes>
   <Route path="/novel/:id" element={<Novel />} />
   <Route path="/Fiction" element={<Fiction />} />
 
-  <Route path="/favorites" element={
-    <div>
-      <h1>Favorites</h1>
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {favorites.map((novel, index) => (
-          <li key={index}>
-            {novel.name}, {novel.author}
-          </li>
-        ))}
-      </ul>
-    </div>
-  } />
 </Routes>
   <section className="hero">
   <h1>Discover your next story</h1>
@@ -84,21 +114,25 @@ function toggleFavorite(novel) {
   <button>Start Exploring</button>
 </section>
       <div className="section-heading">
-  <h2 className="section-title">Featured Novels</h2>
+  <h2 id="featured" className="section-title">Featured Novels</h2>
   <p>Stories selected to help you find your next great read.</p>
 </div>
       <ul className="novel-list">
-        {novels.map((novel, index)=>
-        <li key={index}>
-           <Link to={`/novel/${novel.id}`}>
-             <img src={novel.image} alt={novel.name} />
-           </Link>
-          <h2>{novel.name}</h2>
+        {filteredNovels.map((novel, index) => (
+          <li key={index}>
+            <Link to={`/novel/${novel.id}`}>
+              <img src={novel.image} alt={novel.name} />
+            </Link>
+            <h2>{novel.name}</h2>
           <p>by {novel.author}</p>
           <p>{novel.description}</p>
-          <button onClick={() => toggleFavorite(novel)}>Favorite</button>
+          <button onClick={() => toggleFavorite(novel)}>
+            {favorites.includes(novel.id)
+              ? "Remove Favorite"
+              : "Favorite"}
+          </button>
         </li>
-        )}
+        ))}
       </ul>
       <section className="categories">
   <div className="section-heading">
@@ -124,10 +158,6 @@ function toggleFavorite(novel) {
   </div>
 </section>
 </section>
-    <ul style={{ listStyle: 'none', padding: 0 }}>
-      <button onClick={() => setFavorites([])}>Clear Favorites</button  >
-      {favorites.map((novel, index) =>( <li key={index} >{novel.name}, {novel.author}</li>) )}
-    </ul>
 
 <footer className="footer">
   <div className="footer-content">

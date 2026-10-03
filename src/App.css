@@ -133,6 +133,14 @@ body {
     color 0.2s ease,
     transform 0.2s ease;
 }
+.nav button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
 
 
 /* Small underline animation */
@@ -805,8 +813,9 @@ button:focus-visible {
 
 
   .novel-list img {
-    height: 320px;
-  }
+  width:100%;
+  height: 350;
+  object-fit: contain;
 }
 /* FOOTER RESPONSIVE DESIGN */
 
@@ -854,4 +863,5 @@ button:focus-visible {
     font-size: 12px;
   }
 
+}
 }
