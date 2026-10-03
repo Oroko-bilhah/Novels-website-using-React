@@ -1,32 +1,857 @@
+
+/* 
+   ROOT / DESIGN TOKENS
+   Centralized values make the design easier to maintain.
+    */
+
 :root {
-  color-scheme: light dark;
-  background-color: #6e2828;
+  /* Typography */
+  font-family: Georgia, "Times New Roman", serif;
+
+  /* Main colors */
+  --background: #f7f4ef;
+  --surface: #ffffff;
+  --surface-soft: #eee8df;
+
+  --text-primary: #242424;
+  --text-secondary: #66615b;
+  --text-muted: #8a847c;
+
+  /* Brand colors */
+  --brand: #8b4513;
+  --brand-dark: #6f350e;
+  --brand-light: #c98b5b;
+
+  /* Borders */
+  --border: #ddd6cc;
+  --border-light: #ebe5dc;
+
+  /* Shadows */
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.09);
+  --shadow-lg: 0 18px 45px rgba(0, 0, 0, 0.12);
+
+  /* Layout */
+  --content-width: 1200px;
+
+  /* Rounded corners */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
 }
+
+
+/*  GLOBAL RESET
+    Removes inconsistent browser defaults. */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--background);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+
+/* NAVIGATION */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  padding: 18px 50px;
+
+  background-color: rgba(247, 244, 239, 0.95);
+  border-bottom: 1px solid var(--border);
+
+  backdrop-filter: blur(10px);
+}
+
+
+/* Novella brand */
+
+.logo {
+  margin: 0;
+
+  color: var(--text-primary);
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 25px;
+  font-weight: 700;
+
+  letter-spacing: 3px;
+}
+
+
+/* Navigation list */
+
 .nav ul {
   display: flex;
+  align-items: center;
+
+  gap: 30px;
+
+  padding: 0;
+  margin: 0;
 }
+
+
+/* Navigation list items */
+
 .nav ul li {
-  margin-left: 30px;
-  background-color: blueviolet;
-  height: 30px;
-  width: 100px;
+  list-style: none;
 }
+
+
+/* Navigation links */
+
 .nav ul li a {
-  color: black;
+  position: relative;
+
+  color: var(--text-secondary);
+
   text-decoration: none;
+
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
+
+
+/* Small underline animation */
+
+.nav ul li a::after {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  bottom: -7px;
+
+  width: 0;
+  height: 2px;
+
+  background-color: var(--brand);
+
+  transition: width 0.2s ease;
+}
+
+
+/* Navigation hover */
+
+.nav ul li a:hover {
+  color: var(--brand);
+}
+
+.nav ul li a:hover::after {
+  width: 100%;
+}
+
+
+/* HERO SECTION */
+
+.hero {
+  position: relative;
+
+  max-width: var(--content-width);
+
+  margin: 35px auto 0;
+
+  padding: 105px 30px 110px;
+
+  text-align: center;
+
+  background:
+    linear-gradient(
+      135deg,
+      #eee8df 0%,
+      #f3eee7 50%,
+      #e8dfd4 100%
+    );
+
+  border-radius: var(--radius-lg);
+
+  overflow: hidden;
+}
+
+
+/* Decorative background element */
+
+.hero::before {
+  content: "";
+
+  position: absolute;
+
+  width: 260px;
+  height: 260px;
+
+  top: -120px;
+  left: -80px;
+
+  border-radius: 50%;
+
+  background-color: rgba(139, 69, 19, 0.06);
+}
+
+
+/* Second decorative element */
+
+.hero::after {
+  content: "";
+
+  position: absolute;
+
+  width: 300px;
+  height: 300px;
+
+  right: -150px;
+  bottom: -160px;
+
+  border-radius: 50%;
+
+  background-color: rgba(139, 69, 19, 0.05);
+}
+
+
+/* Hero heading */
+
+.hero h1 {
+  position: relative;
+  z-index: 1;
+
+  max-width: 800px;
+
+  margin: 0 auto 18px;
+
+  font-size: clamp(40px, 6vw, 64px);
+
+  line-height: 1.05;
+
+  letter-spacing: -1.5px;
+}
+
+
+/* Hero paragraph */
+
+.hero p {
+  position: relative;
+  z-index: 1;
+
+  max-width: 650px;
+
+  margin: 0 auto 35px;
+
+  color: var(--text-secondary);
+
+  font-family: Arial, sans-serif;
+
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+
+/* PRIMARY HERO BUTTON */
+
+.hero button {
+  position: relative;
+  z-index: 1;
+
+  padding: 14px 30px;
+
+  border: none;
+  border-radius: var(--radius-sm);
+
+  background-color: var(--brand);
+  color: white;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow: 0 5px 15px rgba(139, 69, 19, 0.2);
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+/* Hero button hover */
+
+.hero button:hover {
+  background-color: var(--brand-dark);
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 20px rgba(139, 69, 19, 0.25);
+}
+
+
+/* Hero button click */
+
+.hero button:active {
+  transform: translateY(0);
+}
+
+
+/* NOVEL SECTION */
+
 .novel-list {
-  display: flex;
-  gap: 20px;
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+
+  gap: 30px;
+
+  max-width: var(--content-width);
+
+  padding: 60px 40px;
+
+  margin: 0 auto;
 }
+/* SECTION HEADING */
+
+.section-heading {
+  max-width: 1200px;
+  margin: 60px auto 0;
+  padding: 0 40px;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+.section-heading p {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+}
+
+/* NOVEL CARDS */
 
 .novel-list li {
   list-style: none;
-  width: 180px;
+
+  min-width: 0;
+
+  padding: 15px;
+
+  background-color: var(--surface);
+
+  border: 1px solid var(--border-light);
+
+  border-radius: var(--radius-md);
+
+  box-shadow: var(--shadow-sm);
+
+  overflow: hidden;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
+
+/* Card hover */
+
+.novel-list li:hover {
+  transform: translateY(-7px);
+
+  border-color: #d8c8b8;
+
+  box-shadow: var(--shadow-md);
+}
+
+
+/* NOVEL COVER */
+
 .novel-list img {
-  width: 180px;
-  height: 240px;
+  display: block;
+
+  width: 100%;
+  height: 285px;
+
   object-fit: cover;
+
+  border-radius: 7px;
+
+  background-color: #e9e4dd;
+
+  transition:
+    transform 0.3s ease,
+    filter 0.3s ease;
+}
+
+
+/* Slight image zoom on card hover */
+
+.novel-list li:hover img {
+  transform: scale(1.025);
+}
+
+
+/* NOVEL TITLE */
+
+.novel-list h2 {
+  margin: 18px 0 6px;
+
+  color: var(--text-primary);
+
+  font-size: 20px;
+
+  line-height: 1.25;
+}
+
+
+/* NOVEL INFORMATION */
+
+.novel-list p {
+  margin: 6px 0;
+
+  color: var(--text-secondary);
+
+  font-family: Arial, sans-serif;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+
+/* FAVORITE BUTTON */
+
+.novel-list button {
+  margin-top: 16px;
+
+  padding: 9px 16px;
+
+  border: 1px solid var(--brand);
+
+  border-radius: var(--radius-sm);
+
+  background-color: transparent;
+
+  color: var(--brand);
+
+  font-family: Arial, sans-serif;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+/* Favorite hover */
+
+.novel-list button:hover {
+  background-color: var(--brand);
+
+  color: white;
+
+  transform: translateY(-1px);
+}
+
+
+/* FOCUS ACCESSIBILITY */
+
+.nav ul li a:focus-visible,
+button:focus-visible {
+  outline: 3px solid rgba(139, 69, 19, 0.35);
+
+  outline-offset: 4px;
+}
+
+
+/* RESPONSIVE DESIGN — TABLETS */
+
+@media (max-width: 900px) {
+
+  .nav {
+    padding: 18px 25px;
+  }
+
+  .nav ul {
+    gap: 20px;
+  }
+
+  .hero {
+    margin: 25px 20px 0;
+
+    padding: 80px 25px 85px;
+  }
+
+  .novel-list {
+    padding: 45px 25px;
+  }
+}
+/* BROWSE BY CATEGORY */
+
+.categories {
+  max-width: 1200px;
+  margin: 20px auto 80px;
+}
+
+
+/* Category buttons */
+
+.category-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+
+  padding: 30px 40px 0;
+}
+
+
+/* Individual category */
+
+.category-list a {
+  padding: 12px 22px;
+
+  border: 1px solid var(--border);
+  border-radius: 30px;
+
+  background-color: var(--surface);
+
+  color: var(--text-primary);
+
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+/* Category hover */
+
+.category-list a:hover {
+  background-color: var(--brand);
+  border-color: var(--brand);
+
+  color: white;
+
+  transform: translateY(-2px);
+}
+
+/* RECENTLY ADDED */
+
+.recent {
+  max-width: 1200px;
+  margin: 0 auto 100px;
+}
+
+
+/* Placeholder content */
+
+.recent-content {
+  margin: 30px 40px 0;
+  padding: 50px 30px;
+
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+
+  text-align: center;
+
+  background-color: rgba(255, 255, 255, 0.45);
+}
+
+
+/* Placeholder text */
+
+.recent-content p {
+  margin: 0;
+
+  color: var(--text-muted);
+
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+}
+/* FOOTER */
+
+.footer {
+  background-color: #29231f;
+  color: #f7f4ef;
+  padding: 65px 50px 20px;
+  margin-top: 80px;
+}
+
+/* Main footer layout */
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto 50px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 60px;
+}
+
+/* Brand section */
+
+.footer-brand h2 {
+  font-size: 26px;
+  letter-spacing: 3px;
+  margin: 0 0 15px;
+}
+
+.footer-brand p {
+  max-width: 350px;
+  color: #c6bdb5;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* Footer link columns */
+
+.footer-links {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links h3 {
+  font-size: 17px;
+  margin: 0 0 10px;
+  line-height: 1.3;
+  color: #ffffff;
+}
+
+.footer-links a {
+  width: fit-content;
+  color: #c6bdb5;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+/* Footer link hover */
+
+.footer-links a:hover {
+  color: #d9a477;
+}
+
+/* Copyright area */
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 20px;
+  border-top: 1px solid #514943;
+  text-align: center;
+}
+
+.footer-bottom p {
+  margin: 0;
+  color: #b9afa6;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+}
+
+/* RESPONSIVE DESIGN — MOBILE */
+
+@media (max-width: 700px) {
+
+  /* Stack logo and navigation */
+
+  .nav {
+    position: static;
+
+    flex-direction: column;
+
+    gap: 18px;
+
+    padding: 18px 20px;
+  }
+
+
+  /* Allow links to wrap */
+
+  .nav ul {
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+    gap: 14px 20px;
+  }
+
+
+  /* Smaller hero */
+
+  .hero {
+    margin: 20px 15px 0;
+
+    padding: 70px 20px 75px;
+
+    border-radius: 12px;
+  }
+
+
+  .hero h1 {
+    font-size: 40px;
+  }
+
+
+  .hero p {
+    font-size: 16px;
+  }
+
+
+  /* Books */
+
+  .novel-list {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 15px;
+
+    padding: 35px 15px;
+  }
+
+
+  .novel-list li {
+    padding: 10px;
+  }
+
+
+  .novel-list img {
+    height: 230px;
+  }
+
+
+  .novel-list h2 {
+    font-size: 17px;
+  }
+
+
+  .novel-list p {
+    font-size: 13px;
+  }
+}
+
+
+/* VERY SMALL PHONES */
+@media (max-width: 420px) {
+
+  .logo {
+    font-size: 22px;
+  }
+
+
+  .nav ul {
+    gap: 10px 15px;
+  }
+
+
+  .nav ul li a {
+    font-size: 14px;
+  }
+
+
+  .hero h1 {
+    font-size: 34px;
+  }
+
+
+  .hero button {
+    width: 100%;
+    max-width: 250px;
+  }
+
+
+  .novel-list {
+    grid-template-columns: 1fr;
+  }
+
+
+  .novel-list img {
+    height: 320px;
+  }
+}
+/* FOOTER RESPONSIVE DESIGN */
+
+@media (max-width: 800px) {
+
+  .footer {
+    padding: 50px 25px 20px;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 35px;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+
+}
+
+
+/* Small screens */
+
+@media (max-width: 500px) {
+
+  .footer {
+    padding: 40px 20px 18px;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    margin-bottom: 35px;
+  }
+
+  .footer-brand {
+    grid-column: auto;
+  }
+
+  .footer-links {
+    gap: 10px;
+  }
+
+  .footer-bottom p {
+    font-size: 12px;
+  }
+
 }
