@@ -13,7 +13,7 @@ const novels = [
     author: "John Doe",
     description: "A novel about the beauty of our planet.",
     category: "Fiction",
-    image:"Beauty-of-earth.jpg"
+    image:"/Beauty-of-earth.jpg"
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ const novels = [
     author: "Jane Smith",
     category: "Science",
     description: "Discover the incredible wonders of nature.",
-    image: "Wonders-of-nature.jpg"
+    image: "/Wonders-of-nature.jpg"
   },
   {
     id: 3,
@@ -29,7 +29,7 @@ const novels = [
     author: "Bob Johnson",
     category: "Fiction",
     description: "A story about compassion and humanity.",
-    image: "The-love-of-humanity.jpg"
+    image: "/The-love-of-humanity.jpg"
   },
   {
     id: 4,
@@ -37,7 +37,7 @@ const novels = [
     author: "Alice Brown",
     category: "Fiction",
     description: "A journey into the power of imagination.",
-    image: "The-power-of-imagination.jpg"
+    image: "/The-power-of-imagination.jpg"
   },
   {
     id: 5,
@@ -45,14 +45,14 @@ const novels = [
     author: "Charlie Wilson",
     category: "Fiction",
     description: "A celebration of stories and the people who tell them.",
-    image: "The-joy-of-storytelling.jpg"
+    image: "/The-joy-of-storytelling.jpg"
   },
   {id: 6,
     name: "The parables of Jesus",
     author: "John Doe",
     description: "A book about the parables of Jesus.",
     category: "Religion",
-    image: "The-parables-of-Jesus.jpg"
+    image: "/The-parables-of-Jesus.jpg"
   },
   {
     id: 7,
@@ -60,7 +60,7 @@ const novels = [
     author: "Jane Smith",
     category: "Philosophy",
     description: "A philosophical exploration of life and existence.",
-    image: "The-philosophy-of-life.jpg"
+    image: "/The-philosophy-of-life.jpg"
   },
   {
     id: 8,
@@ -68,7 +68,7 @@ const novels = [
     author: "Alice Brown",
     category: "Romance",
     description: "A story about hidden love and its consequences.",
-    image: "The-secret-lovers.jpg"
+    image: "/The-secret-lovers.jpg"
   }
 
 ]
@@ -118,7 +118,7 @@ function toggleFavorite(novel) {
   <h2 id="featured" className="section-title">Featured Novels</h2>
   <p>Stories selected to help you find your next great read.</p>
 </div>
-<NovelCard novel={novels[0]}/>
+
       <ul className="novel-list">
         {filteredNovels.map((novel, index) => (
           <li key={index}>
