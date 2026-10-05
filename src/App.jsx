@@ -3,6 +3,7 @@ import { Routes, Route, Link } from 'react-router-dom'
 import './App.css'
 import Novel from './Novel'
 import Fiction from './Fiction'
+import NovelCard from './NovelCard'
 
 
 const novels = [
@@ -117,20 +118,11 @@ function toggleFavorite(novel) {
   <h2 id="featured" className="section-title">Featured Novels</h2>
   <p>Stories selected to help you find your next great read.</p>
 </div>
+<NovelCard novel={novels[0]}/>
       <ul className="novel-list">
         {filteredNovels.map((novel, index) => (
           <li key={index}>
-            <Link to={`/novel/${novel.id}`}>
-              <img src={novel.image} alt={novel.name} />
-            </Link>
-            <h2>{novel.name}</h2>
-          <p>by {novel.author}</p>
-          <p>{novel.description}</p>
-          <button onClick={() => toggleFavorite(novel)}>
-            {favorites.includes(novel.id)
-              ? "Remove Favorite"
-              : "Favorite"}
-          </button>
+           <NovelCard novel={novel} toggleFavorite={toggleFavorite}  favorites={favorites} />
         </li>
         ))}
       </ul>
