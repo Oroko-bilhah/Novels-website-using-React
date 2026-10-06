@@ -13,7 +13,7 @@ const novels = [
     author: "John Doe",
     description: "A novel about the beauty of our planet.",
     category: "Fiction",
-    image:"/Beauty-of-earth.jpg"
+    image: "/Novels-website-using-React/Beauty-of-earth.jpg"
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ const novels = [
     author: "Jane Smith",
     category: "Science",
     description: "Discover the incredible wonders of nature.",
-    image: "/Wonders-of-nature.jpg"
+    image: "/Novels-website-using-React/Wonders-of-nature.jpg"
   },
   {
     id: 3,
@@ -29,7 +29,7 @@ const novels = [
     author: "Bob Johnson",
     category: "Fiction",
     description: "A story about compassion and humanity.",
-    image: "/The-love-of-humanity.jpg"
+    image: "/Novels-website-using-React/The-love-of-humanity.jpg"
   },
   {
     id: 4,
@@ -37,7 +37,7 @@ const novels = [
     author: "Alice Brown",
     category: "Fiction",
     description: "A journey into the power of imagination.",
-    image: "/The-power-of-imagination.jpg"
+    image: "/Novels-website-using-React/The-power-of-imagination.jpg"
   },
   {
     id: 5,
@@ -45,14 +45,14 @@ const novels = [
     author: "Charlie Wilson",
     category: "Fiction",
     description: "A celebration of stories and the people who tell them.",
-    image: "/The-joy-of-storytelling.jpg"
+    image: "/Novels-website-using-React/The-joy-of-storytelling.jpg"
   },
   {id: 6,
     name: "The parables of Jesus",
     author: "John Doe",
     description: "A book about the parables of Jesus.",
     category: "Religion",
-    image: "/The-parables-of-Jesus.jpg"
+    image: "/Novels-website-using-React/The-parables-of-Jesus.jpg"
   },
   {
     id: 7,
@@ -60,7 +60,7 @@ const novels = [
     author: "Jane Smith",
     category: "Philosophy",
     description: "A philosophical exploration of life and existence.",
-    image: "/The-philosophy-of-life.jpg"
+    image: "/Novels-website-using-React/The-philosophy-of-life.jpg"
   },
   {
     id: 8,
@@ -68,7 +68,7 @@ const novels = [
     author: "Alice Brown",
     category: "Romance",
     description: "A story about hidden love and its consequences.",
-    image: "/The-secret-lovers.jpg"
+    image: "/Novels-website-using-React/The-secret-lovers.jpg"
   }
 
 ]
@@ -112,7 +112,7 @@ function toggleFavorite(novel) {
   <section className="hero">
   <h1>Discover your next story</h1>
   <p>Explore novels, find new worlds, and get lost in a good book.</p>
-  <button>Start Exploring</button>
+  <button onClick={()=> {document.getElementById('featured').scrollIntoView({behavior:'smooth'})} }>Start Exploring</button>
 </section>
       <div className="section-heading">
   <h2 id="featured" className="section-title">Featured Novels</h2>
@@ -133,11 +133,11 @@ function toggleFavorite(novel) {
   </div>
 
   <div className="category-list">
-    <Link to="/romance">Romance</Link>
-    <Link to="/Fiction">Fiction</Link>
-    <Link to="/philosophy">Philosophy</Link>
-    <Link to="/science">Science</Link>
-    <Link to="/religion">Religion</Link>
+    <button onClick={ ()=> setSelectedCategory('Romance') }> Romance</button>
+    <button onClick={()=> setSelectedCategory('Fiction')} > Fiction </button>
+    <button onClick= {()=> setSelectedCategory('Philosophy')}> Philosophy </button>
+    <button onClick={()=> setSelectedCategory('Science')}> Science </button>
+    <button onClick={()=> setSelectedCategory('Religion')}> Religion </button>
   </div>
   <section className="recent">
   <div className="section-heading">
@@ -146,7 +146,15 @@ function toggleFavorite(novel) {
   </div>
 
   <div className="recent-content">
-    <p>More stories are coming soon.</p>
+  {
+    novels.slice(-3).map((novel) =>( <NovelCard
+    key={novel.id}
+    novel={novel}
+    toggleFavorite={toggleFavorite}
+    favorites={favorites}
+    />
+    ))
+  }
   </div>
 </section>
 </section>
