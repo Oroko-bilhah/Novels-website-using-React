@@ -7,7 +7,9 @@ function NovelCard({ novel, toggleFavorite, favorites }) {
         <img src={novel.image} alt={novel.name} />
       </Link>
 
+      <Link to={`/novel/${novel.id}`}>
       <h2>{novel.name}</h2>
+      </Link>
       <p>{novel.author}</p>
       <p>{novel.description}</p>
 
