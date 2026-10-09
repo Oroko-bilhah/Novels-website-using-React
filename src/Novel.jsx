@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { stories } from './data/stories/index.js'
-import { novels } from './data/novels.js'
+
 import {
   getSavedProgress,
   removeNovelProgress,
@@ -17,7 +17,49 @@ function Novel() {
   const [imageError, setImageError] = useState(false)
   const [favorites, setFavorites] = useState(() => getSavedFavorites())
 
-  const novelMeta = novels.find((n) => n.id === novelId)
+  const [novelMeta, setNovelMeta] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [relatedNovels, setRelatedNovels] = useState([])
+
+  useEffect(() => {
+  async function fetchNovel() {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/books/${novelId}`
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch book')
+      }
+
+      const data = await response.json()
+setNovelMeta(data.book)
+
+const booksResponse = await fetch('http://localhost:5000/api/v1/books')
+
+if (booksResponse.ok) {
+  const booksData = await booksResponse.json()
+
+  setRelatedNovels(
+    booksData.books
+      .filter(
+        (book) =>
+          book.category === data.book.category &&
+          book.id !== data.book.id
+      )
+      .slice(0, 3)
+  )
+}
+    } catch (err) {
+      setError('Could not load this book.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  fetchNovel()
+}, [novelId])
   const story = stories.find((s) => s.id === novelId)
   const saved = getSavedProgress(novelId)
 
@@ -38,12 +80,15 @@ function Novel() {
     window.location.reload()
   }
 
-  // Related novels from the same category
-  const relatedNovels = novelMeta
-    ? novels.filter((n) => n.category === novelMeta.category && n.id !== novelMeta.id).slice(0, 3)
-    : []
 
-  if (!novelMeta) {
+   if (loading) {
+  return (
+    <div className="novel-reader-wrapper">
+      <p>Loading book details...</p>
+    </div>
+  )
+}
+if (error || !novelMeta) {
     return (
       <div className="novel-reader-wrapper">
         <div className="reader-error-card" role="alert">

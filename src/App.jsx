@@ -6,7 +6,7 @@ import Reader from './Reader'
 import Fiction from './Fiction'
 import NovelCard from './NovelCard'
 import ContinueReading from './ContinueReading'
-import { novels } from './data/novels'
+
 import {
   getSavedFavorites,
   saveFavorites,
@@ -216,6 +216,9 @@ function HomePage({
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState('All')
+  const [novels, setNovels] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [favorites, setFavorites] = useState(() => getSavedFavorites())
   const [progressList, setProgressList] = useState(() => getAllSavedProgress())
@@ -226,6 +229,26 @@ function App() {
     setProgressList(getAllSavedProgress())
   }, [])
 
+  useEffect(()=>{
+    async function fetchNovels() {
+      try {
+        const response = await fetch('http://localhost:5000/api/v1/books')
+        if(!response.ok){
+          throw new Error('Failed to fetch  books')
+        }
+        const data = await response.json()
+        setNovels(data.books)
+      }
+      catch (err) {
+        setError('Could not load books, make sure backend is running.')
+      }
+      finally {
+        setLoading(false)
+      }
+    }
+    fetchNovels()
+  },[]
+  )
   useEffect(() => {
     window.addEventListener('focus', refreshProgress)
     window.addEventListener('storage', refreshProgress)
@@ -281,7 +304,7 @@ function App() {
       }
     })
     return counts
-  }, [])
+  }, [novels])
 
   // Filter novels by search query and category
   const filteredNovels = useMemo(() => {
@@ -306,7 +329,16 @@ function App() {
 
       return matchesCategory && matchesSearch
     })
-  }, [selectedCategory, searchQuery, favorites])
+  }, [novels, selectedCategory, searchQuery, favorites])
+
+  
+if (loading) {
+  return <div className="App">Loading Novella library...</div>
+}
+
+if (error) {
+  return <div className="App">{error}</div>
+}
 
   return (
     <div className="App">
