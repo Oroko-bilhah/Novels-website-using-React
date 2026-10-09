@@ -1,10 +1,9 @@
 import { useState } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, Link, useNavigate } from 'react-router-dom'
 import './App.css'
 import Novel from './Novel'
 import Fiction from './Fiction'
 import NovelCard from './NovelCard'
-
 
 const novels = [
   {
@@ -47,7 +46,8 @@ const novels = [
     description: "A celebration of stories and the people who tell them.",
     image: "/Novels-website-using-React/The-joy-of-storytelling.jpg"
   },
-  {id: 6,
+  {
+    id: 6,
     name: "The parables of Jesus",
     author: "John Doe",
     description: "A book about the parables of Jesus.",
@@ -70,125 +70,143 @@ const novels = [
     description: "A story about hidden love and its consequences.",
     image: "/Novels-website-using-React/The-secret-lovers.jpg"
   }
-
 ]
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState('All')
+  const [favorites, setFavorites] = useState([])
+  const navigate = useNavigate()
 
-const [favorites, setFavorites] = useState([])
   const filteredNovels = selectedCategory === 'All'
-   ? novels
-   :selectedCategory === 'Favorites'
-   ? novels.filter((novel) => favorites.includes(novel.id))
-  : novels.filter((novel) => novel.category === selectedCategory)
+    ? novels
+    : selectedCategory === 'Favorites'
+    ? novels.filter((novel) => favorites.includes(novel.id))
+    : novels.filter((novel) => novel.category === selectedCategory)
 
-function toggleFavorite(novel) {
-  if (favorites.includes(novel.id)) {
-    setFavorites(favorites.filter(id => id !== novel.id))
-  } else {
-    setFavorites([...favorites, novel.id])
+  function toggleFavorite(novel) {
+    if (favorites.includes(novel.id)) {
+      setFavorites(favorites.filter(id => id !== novel.id))
+    } else {
+      setFavorites([...favorites, novel.id])
+    }
   }
-}
-  return (
-    <div className="App">
-      <nav className="nav">
-    <h2 className="logo">NOVELLA</h2>
-   <ul className="nav-links">
-    <li><button onClick={()=>setSelectedCategory('All')}>All</button></li>
-    <li><button onClick={()=>setSelectedCategory('Religion')}>Religion</button></li>
-    <li><button onClick={()=>setSelectedCategory('Science')}>Science</button></li>
-    <li><button onClick={()=>setSelectedCategory('Romance')}>Romance</button></li>
-    <li><button onClick={()=>setSelectedCategory('Fiction')}>Fiction</button></li>
-    <li><button onClick={()=>setSelectedCategory('Philosophy')}>Philosophy</button></li>
-    <li><button onClick={()=>setSelectedCategory('Favorites')}>Favorites</button></li>
-  </ul>
-</nav>
-<Routes>
-  <Route path="/novel/:id" element={<Novel />} />
-  <Route path="/Fiction" element={<Fiction />} />
 
-</Routes>
-  <section className="hero">
-  <h1>Discover your next story</h1>
-  <p>Explore novels, find new worlds, and get lost in a good book.</p>
-  <button onClick={()=> {document.getElementById('featured').scrollIntoView({behavior:'smooth'})} }>Start Exploring</button>
-</section>
+  function handleSelectCategory(cat) {
+    setSelectedCategory(cat)
+    navigate('/')
+  }
+
+  const HomePage = () => (
+    <>
+      <section className="hero">
+        <h1>Discover your next story</h1>
+        <p>Explore novels, find new worlds, and get lost in a good book.</p>
+        <button onClick={() => { document.getElementById('featured')?.scrollIntoView({ behavior: 'smooth' }) }}>
+          Start Exploring
+        </button>
+      </section>
+
       <div className="section-heading">
-  <h2 id="featured" className="section-title">Featured Novels</h2>
-  <p>Stories selected to help you find your next great read.</p>
-</div>
+        <h2 id="featured" className="section-title">Featured Novels</h2>
+        <p>Stories selected to help you find your next great read.</p>
+      </div>
 
       <ul className="novel-list">
         {filteredNovels.map((novel, index) => (
           <li key={index}>
-           <NovelCard novel={novel} toggleFavorite={toggleFavorite}  favorites={favorites} />
-        </li>
+            <NovelCard novel={novel} toggleFavorite={toggleFavorite} favorites={favorites} />
+          </li>
         ))}
       </ul>
+
       <section className="categories">
-  <div className="section-heading">
-    <h2 className="section-title">Browse by Category</h2>
-    <p>Explore stories based on what you're in the mood to read.</p>
-  </div>
+        <div className="section-heading">
+          <h2 className="section-title">Browse by Category</h2>
+          <p>Explore stories based on what you're in the mood to read.</p>
+        </div>
 
-  <div className="category-list">
-    <button onClick={ ()=> setSelectedCategory('Romance') }> Romance</button>
-    <button onClick={()=> setSelectedCategory('Fiction')} > Fiction </button>
-    <button onClick= {()=> setSelectedCategory('Philosophy')}> Philosophy </button>
-    <button onClick={()=> setSelectedCategory('Science')}> Science </button>
-    <button onClick={()=> setSelectedCategory('Religion')}> Religion </button>
-  </div>
-  <section className="recent">
-  <div className="section-heading">
-    <h2 className="section-title">Recently Added</h2>
-    <p>Take a look at some of the latest stories on Novella.</p>
-  </div>
+        <div className="category-list">
+          <button onClick={() => setSelectedCategory('Romance')}>Romance</button>
+          <button onClick={() => setSelectedCategory('Fiction')}>Fiction</button>
+          <button onClick={() => setSelectedCategory('Philosophy')}>Philosophy</button>
+          <button onClick={() => setSelectedCategory('Science')}>Science</button>
+          <button onClick={() => setSelectedCategory('Religion')}>Religion</button>
+        </div>
 
-  <div className="recent-content">
-  {
-    novels.slice(-3).map((novel) =>( <NovelCard
-    key={novel.id}
-    novel={novel}
-    toggleFavorite={toggleFavorite}
-    favorites={favorites}
-    />
-    ))
-  }
-  </div>
-</section>
-</section>
+        <section className="recent">
+          <div className="section-heading">
+            <h2 className="section-title">Recently Added</h2>
+            <p>Take a look at some of the latest stories on Novella.</p>
+          </div>
 
-<footer className="footer">
-  <div className="footer-content">
-    <div className="footer-brand">
-      <h2>NOVELLA</h2>
-      <p>
-        Discover stories, explore new worlds,
-        and find your next favorite read.
-      </p>
-    </div>
+          <div className="recent-content">
+            {novels.slice(-3).map((novel) => (
+              <NovelCard
+                key={novel.id}
+                novel={novel}
+                toggleFavorite={toggleFavorite}
+                favorites={favorites}
+              />
+            ))}
+          </div>
+        </section>
+      </section>
+    </>
+  )
 
-    <div className="footer-links">
-      <h3>Explore</h3>
-      <Link to="/">Home</Link>
-      <Link to="/romance">Romance</Link>
-      <Link to="/Fiction">Fiction</Link>
-      <Link to="/science">Science</Link>
-    </div>
+  return (
+    <div className="App">
+      <nav className="nav">
+        <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <h2 className="logo">NOVELLA</h2>
+        </Link>
+        <ul className="nav-links">
+          <li><button onClick={() => handleSelectCategory('All')}>All</button></li>
+          <li><button onClick={() => handleSelectCategory('Religion')}>Religion</button></li>
+          <li><button onClick={() => handleSelectCategory('Science')}>Science</button></li>
+          <li><button onClick={() => handleSelectCategory('Romance')}>Romance</button></li>
+          <li><button onClick={() => handleSelectCategory('Fiction')}>Fiction</button></li>
+          <li><button onClick={() => handleSelectCategory('Philosophy')}>Philosophy</button></li>
+          <li><button onClick={() => handleSelectCategory('Favorites')}>Favorites</button></li>
+        </ul>
+      </nav>
 
-    <div className="footer-links">
-      <h3>About</h3>
-      <a href="#about">About Us</a>
-      <a href="#contact">Contact</a>
-    </div>
-  </div>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/novel/:id" element={<Novel />} />
+        <Route path="/Fiction" element={<Fiction />} />
+        <Route path="*" element={<HomePage />} />
+      </Routes>
 
-  <div className="footer-bottom">
-    <p>© 2026 Novella. All rights reserved.</p>
-  </div>
-</footer>
+      <footer className="footer">
+        <div className="footer-content">
+          <div className="footer-brand">
+            <h2>NOVELLA</h2>
+            <p>
+              Discover stories, explore new worlds,
+              and find your next favorite read.
+            </p>
+          </div>
 
+          <div className="footer-links">
+            <h3>Explore</h3>
+            <Link to="/">Home</Link>
+            <Link to="/romance" onClick={() => setSelectedCategory('Romance')}>Romance</Link>
+            <Link to="/Fiction">Fiction</Link>
+            <Link to="/science" onClick={() => setSelectedCategory('Science')}>Science</Link>
+          </div>
+
+          <div className="footer-links">
+            <h3>About</h3>
+            <a href="#about">About Us</a>
+            <a href="#contact">Contact</a>
+          </div>
+        </div>
+
+        <div className="footer-bottom">
+          <p>© 2026 Novella. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   )
 }

@@ -1,0 +1,588 @@
+/* NOVEL READER STYLING */
+
+.novel-reader-wrapper {
+  max-width: 880px;
+  margin: 30px auto 60px;
+  padding: 0 20px;
+  min-height: 65vh;
+}
+
+/* Breadcrumb / Top Navigation */
+.reader-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.reader-back-library-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--brand);
+  text-decoration: none;
+  font-family: Arial, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(139, 69, 19, 0.06);
+  border: 1px solid rgba(139, 69, 19, 0.15);
+  transition: all 0.2s ease;
+}
+
+.reader-back-library-link:hover {
+  background-color: var(--brand);
+  color: #ffffff;
+  transform: translateX(-3px);
+}
+
+/* Book Header Banner */
+.reader-book-header {
+  text-align: center;
+  padding: 10px 10px 25px;
+}
+
+.reader-category-pill {
+  display: inline-block;
+  background-color: var(--surface-soft);
+  color: var(--brand-dark);
+  font-family: Arial, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+}
+
+.reader-book-title {
+  margin: 0 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  color: var(--text-primary);
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+}
+
+.reader-book-author {
+  margin: 0 0 14px;
+  color: var(--text-secondary);
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+.reader-book-desc {
+  max-width: 600px;
+  margin: 0 auto 18px;
+  color: var(--text-secondary);
+  font-family: Arial, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.reader-book-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  font-family: Arial, sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.reader-book-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Table of Contents View */
+
+.reader-toc-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 40px 35px;
+}
+
+.reader-toc-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.reader-toc-header h2 {
+  margin: 0 0 8px;
+  font-size: 1.65rem;
+  color: var(--text-primary);
+  font-family: Georgia, serif;
+}
+
+.reader-toc-header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-family: Arial, sans-serif;
+  font-size: 0.92rem;
+}
+
+.reader-chapter-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.reader-chapter-btn {
+  width: 100%;
+  text-align: left;
+  background-color: #faf7f2;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font: inherit;
+}
+
+.reader-chapter-btn:hover {
+  background-color: #ffffff;
+  border-color: var(--brand-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.reader-chapter-info {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.reader-chapter-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--surface-soft);
+  color: var(--brand-dark);
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.reader-chapter-title-text {
+  font-family: Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.reader-chapter-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.reader-chapter-pages-badge {
+  font-family: Arial, sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.reader-chapter-action {
+  font-family: Arial, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+/* Immersive Chapter Reading Card */
+
+.reader-reading-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.reader-paper-card {
+  position: relative;
+  background-color: #fdfbf7;
+  border: 1px solid #e5ded4;
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 12px 36px rgba(45, 30, 18, 0.08),
+    0 1px 3px rgba(45, 30, 18, 0.04);
+  padding: 44px 48px 40px;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Subtitle / Header inside Reading Card */
+.reader-card-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.reader-toc-return-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--brand);
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.reader-toc-return-btn:hover {
+  background-color: rgba(139, 69, 19, 0.08);
+  color: var(--brand-dark);
+}
+
+.reader-card-chapter-indicator {
+  font-family: Arial, sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Progress bar along the card */
+.reader-progress-track {
+  width: 100%;
+  height: 4px;
+  background-color: #ebe4da;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.reader-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand-light), var(--brand));
+  transition: width 0.35s ease;
+}
+
+/* Chapter Heading inside Page */
+.reader-chapter-header {
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.reader-chapter-badge {
+  text-transform: uppercase;
+  font-family: Arial, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 2px;
+  color: var(--brand);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.reader-chapter-heading {
+  margin: 0 0 16px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.1rem);
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.reader-ornament-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 auto;
+  max-width: 180px;
+}
+
+.reader-ornament-divider::before,
+.reader-ornament-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--border);
+}
+
+.reader-ornament-symbol {
+  color: var(--brand-light);
+  font-size: 0.95rem;
+}
+
+/* Page Prose Content */
+.reader-page-prose-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0 30px;
+}
+
+.reader-page-prose {
+  max-width: 68ch;
+  width: 100%;
+  margin: 0 auto;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.22rem;
+  line-height: 1.85;
+  color: #2b2723;
+  text-wrap: pretty;
+  letter-spacing: 0.01em;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.reader-page-prose::first-letter {
+  font-size: 2.2em;
+  float: left;
+  line-height: 0.85;
+  margin-right: 8px;
+  margin-top: 4px;
+  color: var(--brand);
+  font-family: Georgia, serif;
+}
+
+/* Chapter Completed / Next Chapter Banner */
+.reader-chapter-complete-banner {
+  margin: 20px 0 30px;
+  padding: 20px 24px;
+  background-color: rgba(139, 69, 19, 0.05);
+  border: 1px dashed var(--brand-light);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.reader-chapter-complete-banner p {
+  margin: 0 0 12px;
+  font-family: Arial, sans-serif;
+  font-size: 0.95rem;
+  color: var(--brand-dark);
+  font-weight: 600;
+}
+
+.reader-btn-next-chapter {
+  background-color: var(--brand);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 22px;
+  font-family: Arial, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(139, 69, 19, 0.2);
+}
+
+.reader-btn-next-chapter:hover {
+  background-color: var(--brand-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 69, 19, 0.3);
+}
+
+/* Pagination Bar */
+.reader-pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-light);
+}
+
+.reader-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: var(--radius-sm);
+  font-family: Arial, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--brand);
+  background-color: transparent;
+  color: var(--brand);
+  transition: all 0.2s ease;
+}
+
+.reader-nav-btn:hover:not(:disabled) {
+  background-color: var(--brand);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.reader-nav-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.reader-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: var(--border);
+  color: var(--text-muted);
+  background-color: transparent;
+}
+
+.reader-nav-btn.primary {
+  background-color: var(--brand);
+  color: #ffffff;
+}
+
+.reader-nav-btn.primary:hover:not(:disabled) {
+  background-color: var(--brand-dark);
+  border-color: var(--brand-dark);
+}
+
+/* Page indicator & clickable dots */
+.reader-page-indicator-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.reader-page-indicator-text {
+  font-family: Arial, sans-serif;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.reader-page-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reader-page-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background-color: #ded6cb;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.reader-page-dot:hover {
+  background-color: var(--brand-light);
+  transform: scale(1.2);
+}
+
+.reader-page-dot.active {
+  background-color: var(--brand);
+  transform: scale(1.35);
+}
+
+/* Not Available Empty State */
+.reader-empty-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 60px 30px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  max-width: 600px;
+  margin: 40px auto;
+}
+
+.reader-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  color: var(--brand-light);
+}
+
+.reader-empty-card h2 {
+  font-size: 1.8rem;
+  margin: 0 0 10px;
+  color: var(--text-primary);
+}
+
+.reader-empty-card p {
+  color: var(--text-secondary);
+  font-family: Arial, sans-serif;
+  margin: 0 0 24px;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .novel-reader-wrapper {
+    margin: 20px auto 40px;
+    padding: 0 14px;
+  }
+
+  .reader-toc-card {
+    padding: 28px 18px;
+  }
+
+  .reader-paper-card {
+    padding: 28px 22px 24px;
+  }
+
+  .reader-page-prose {
+    font-size: 1.1rem;
+    line-height: 1.75;
+  }
+
+  .reader-chapter-btn {
+    padding: 14px 16px;
+  }
+
+  .reader-chapter-title-text {
+    font-size: 1.05rem;
+  }
+
+  .reader-pagination-bar {
+    justify-content: center;
+  }
+
+  .reader-page-indicator-wrap {
+    order: -1;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reader-pagination-bar {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .reader-nav-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
