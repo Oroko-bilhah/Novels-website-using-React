@@ -1,251 +1,305 @@
 import { useParams, Link } from 'react-router-dom'
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { stories } from './data/stories/index.js'
+import { novels } from './data/novels.js'
+import {
+  getSavedProgress,
+  removeNovelProgress,
+  getSavedFavorites,
+  saveFavorites,
+} from './utils/readingProgress.js'
+import NovelCard from './NovelCard.jsx'
 import './Novel.css'
 
 function Novel() {
   const { id } = useParams()
-  const [selectedChapter, setSelectedChapter] = useState(null)
-  const [currentPage, setCurrentPage] = useState(0)
-  const readerTopRef = useRef(null)
+  const novelId = Number(id)
+  const [imageError, setImageError] = useState(false)
+  const [favorites, setFavorites] = useState(() => getSavedFavorites())
 
-  const story = stories.find((story) => story.id === Number(id))
+  const novelMeta = novels.find((n) => n.id === novelId)
+  const story = stories.find((s) => s.id === novelId)
+  const saved = getSavedProgress(novelId)
 
-  // Smooth scroll reader into view on chapter or page change
-  useEffect(() => {
-    if (readerTopRef.current) {
-      readerTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }, [id, selectedChapter, currentPage])
+  // Toggle favorite for this book
+  const isFavorite = favorites.includes(novelId)
+  const toggleFavorite = () => {
+    setFavorites((prev) => {
+      const next = prev.includes(novelId)
+        ? prev.filter((i) => i !== novelId)
+        : [...prev, novelId]
+      saveFavorites(next)
+      return next
+    })
+  }
 
-  // Reset chapter selection if novel id changes
-  useEffect(() => {
-    setSelectedChapter(null)
-    setCurrentPage(0)
-  }, [id])
+  const handleResetProgress = () => {
+    removeNovelProgress(novelId)
+    window.location.reload()
+  }
 
-  if (!story) {
+  // Related novels from the same category
+  const relatedNovels = novelMeta
+    ? novels.filter((n) => n.category === novelMeta.category && n.id !== novelMeta.id).slice(0, 3)
+    : []
+
+  if (!novelMeta) {
     return (
       <div className="novel-reader-wrapper">
-        <div className="reader-empty-card">
-          <div className="reader-empty-icon">📖</div>
-          <h2>Story Not Available Yet</h2>
-          <p>We are actively curating more stories. Please check back soon or explore other novels.</p>
-          <Link to="/" className="reader-nav-btn primary">
-            ← Back to Library
-          </Link>
+        <div className="reader-error-card" role="alert">
+          <div className="reader-error-icon" aria-hidden="true">📖</div>
+          <h2>Novel Not Found</h2>
+          <p>We couldn&apos;t find a book with ID <strong>#{id}</strong> in our catalog.</p>
+          <div className="reader-error-actions">
+            <Link to="/" className="reader-nav-btn primary">
+              ← Return to Library
+            </Link>
+          </div>
         </div>
       </div>
     )
   }
 
-  // Find next chapter if available
-  const currentChapterIndex = selectedChapter
-    ? story.chapters.findIndex((c) => c.id === selectedChapter.id)
-    : -1
-  const nextChapter =
-    currentChapterIndex >= 0 && currentChapterIndex < story.chapters.length - 1
-      ? story.chapters[currentChapterIndex + 1]
-      : null
+  const totalPagesInBook = story
+    ? story.chapters.reduce((total, ch) => total + ch.pages.length, 0)
+    : novelMeta.totalPages || 25
 
-  const totalPagesInBook = story.chapters.reduce(
-    (total, ch) => total + ch.pages.length,
-    0
-  )
-
-  const handleSelectChapter = (chapter) => {
-    setSelectedChapter(chapter)
-    setCurrentPage(0)
-  }
-
-  const handleNextChapter = () => {
-    if (nextChapter) {
-      setSelectedChapter(nextChapter)
-      setCurrentPage(0)
-    } else {
-      setSelectedChapter(null)
-      setCurrentPage(0)
-    }
-  }
+  const totalChapters = story ? story.chapters.length : novelMeta.totalChapters || 5
 
   return (
-    <div className="novel-reader-wrapper" ref={readerTopRef}>
-      {/* Top breadcrumb navigation */}
-      <div className="reader-top-nav">
+    <div className="novel-details-page-wrapper">
+      {/* Top Breadcrumb Navigation */}
+      <nav className="reader-top-nav" aria-label="Book breadcrumbs">
+        <div className="reader-breadcrumbs">
+          <Link to="/" className="reader-breadcrumb-link">
+            Library
+          </Link>
+          <span className="reader-breadcrumb-sep" aria-hidden="true">/</span>
+          {novelMeta.category && (
+            <>
+              <span className="reader-breadcrumb-sub">{novelMeta.category}</span>
+              <span className="reader-breadcrumb-sep" aria-hidden="true">/</span>
+            </>
+          )}
+          <span className="reader-breadcrumb-current">{novelMeta.name}</span>
+        </div>
+
         <Link to="/" className="reader-back-library-link">
           ← Back to Library
         </Link>
-      </div>
+      </nav>
 
-      {/* Book title and author overview */}
-      <header className="reader-book-header">
-        {story.category && (
-          <span className="reader-category-pill">{story.category}</span>
-        )}
-        <h1 className="reader-book-title">{story.title}</h1>
-        {story.author && (
-          <p className="reader-book-author">By {story.author}</p>
-        )}
-        {story.description && (
-          <p className="reader-book-desc">{story.description}</p>
-        )}
-        <div className="reader-book-meta">
-          <span>📚 {story.chapters.length} Chapters</span>
-          <span>•</span>
-          <span>📄 {totalPagesInBook} Pages</span>
+      {/* Book Hero / Overview Card */}
+      <header className="book-details-hero-card">
+        {/* Cover Artwork Showcase with Perfect Fit */}
+        <div className="book-details-cover-container">
+          <div className="book-details-cover-frame">
+            {imageError ? (
+              <div className="book-details-fallback-cover" aria-hidden="true">
+                <span className="details-fallback-icon">📖</span>
+                <span className="details-fallback-title">{novelMeta.name}</span>
+              </div>
+            ) : (
+              <img
+                src={novelMeta.image}
+                alt={`Cover of ${novelMeta.name}`}
+                className="book-details-cover-img"
+                onError={() => setImageError(true)}
+              />
+            )}
+          </div>
         </div>
-      </header>
 
-      {/* Table of Contents View */}
-      {!selectedChapter && (
-        <div className="reader-toc-card">
-          <div className="reader-toc-header">
-            <h2>Table of Contents</h2>
-            <p>Select a chapter below to immerse yourself in the story.</p>
+        {/* Book Information & Actions */}
+        <div className="book-details-info">
+          {novelMeta.category && (
+            <span className="reader-category-pill">{novelMeta.category}</span>
+          )}
+
+          <h1 className="book-details-title">{novelMeta.name}</h1>
+          <p className="book-details-author">by {novelMeta.author}</p>
+
+          <p className="book-details-synopsis">{novelMeta.description}</p>
+
+          {/* Key Book Metadata */}
+          <div className="book-details-meta-grid">
+            <div className="book-meta-item">
+              <span className="meta-item-label">Chapters</span>
+              <span className="meta-item-value">{totalChapters} Chapters</span>
+            </div>
+            <div className="book-meta-item">
+              <span className="meta-item-label">Length</span>
+              <span className="meta-item-value">{totalPagesInBook} Pages</span>
+            </div>
+            <div className="book-meta-item">
+              <span className="meta-item-label">Genre</span>
+              <span className="meta-item-value">{novelMeta.category}</span>
+            </div>
+            {novelMeta.year && (
+              <div className="book-meta-item">
+                <span className="meta-item-label">Published</span>
+                <span className="meta-item-value">{novelMeta.year}</span>
+              </div>
+            )}
           </div>
 
-          <ul className="reader-chapter-list">
-            {story.chapters.map((chapter, idx) => (
-              <li key={chapter.id}>
-                <button
-                  type="button"
-                  className="reader-chapter-btn"
-                  onClick={() => handleSelectChapter(chapter)}
-                >
-                  <div className="reader-chapter-info">
-                    <span className="reader-chapter-num">{idx + 1}</span>
-                    <span className="reader-chapter-title-text">
-                      {chapter.title}
-                    </span>
-                  </div>
-                  <div className="reader-chapter-right">
-                    <span className="reader-chapter-pages-badge">
-                      {chapter.pages.length} Pages
-                    </span>
-                    <span className="reader-chapter-action">
-                      Read Chapter →
-                    </span>
-                  </div>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Active Chapter Reading View */}
-      {selectedChapter && (
-        <div className="reader-reading-container">
-          <div className="reader-paper-card">
-            {/* Card top bar */}
-            <div className="reader-card-top-bar">
-              <button
-                type="button"
-                className="reader-toc-return-btn"
-                onClick={() => setSelectedChapter(null)}
-              >
-                ← Table of Contents
-              </button>
-              <span className="reader-card-chapter-indicator">
-                Chapter {currentChapterIndex + 1} of {story.chapters.length}
-              </span>
-            </div>
-
-            {/* Reading progress track */}
-            <div className="reader-progress-track">
+          {/* Reading Progress Card / Launch Banner */}
+          {saved && saved.percentage > 0 ? (
+            <div className="book-details-progress-banner">
+              <div className="progress-banner-text-row">
+                <span className="progress-banner-label">Your Reading Progress:</span>
+                <span className="progress-banner-val">{saved.percentage}% Complete</span>
+              </div>
               <div
-                className="reader-progress-bar"
-                style={{
-                  width: `${
-                    ((currentPage + 1) / selectedChapter.pages.length) * 100
-                  }%`,
-                }}
-              />
-            </div>
-
-            {/* Chapter Heading Inside the Book */}
-            <div className="reader-chapter-header">
-              <div className="reader-chapter-badge">
-                Chapter {currentChapterIndex + 1}
+                className="book-details-progress-track"
+                role="progressbar"
+                aria-valuenow={saved.percentage}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={`Reading progress: ${saved.percentage}%`}
+              >
+                <div
+                  className="book-details-progress-fill"
+                  style={{ width: `${saved.percentage}%` }}
+                />
               </div>
-              <h2 className="reader-chapter-heading">
-                {selectedChapter.title}
-              </h2>
-              <div className="reader-ornament-divider">
-                <span className="reader-ornament-symbol">✦</span>
-              </div>
-            </div>
-
-            {/* Story Page Content */}
-            <div className="reader-page-prose-container">
-              <p className="reader-page-prose">
-                {selectedChapter.pages[currentPage]}
+              <p className="progress-banner-subtext">
+                Currently on Chapter {(saved.chapterIndex || 0) + 1}: &ldquo;{saved.chapterTitle || 'Chapter ' + ((saved.chapterIndex || 0) + 1)}&rdquo;, Page {(saved.currentPage || 0) + 1}
               </p>
             </div>
+          ) : null}
 
-            {/* Next Chapter Prompt at end of chapter */}
-            {currentPage === selectedChapter.pages.length - 1 && (
-              <div className="reader-chapter-complete-banner">
-                <p>
-                  {nextChapter
-                    ? `You've completed Chapter ${currentChapterIndex + 1}!`
-                    : "You've finished the final chapter of this novel!"}
-                </p>
-                <button
-                  type="button"
-                  className="reader-btn-next-chapter"
-                  onClick={handleNextChapter}
+          {/* Action CTAs */}
+          <div className="book-details-cta-row">
+            {story ? (
+              <>
+                <Link
+                  to={saved && saved.percentage > 0 ? `/read/${novelMeta.id}?resume=true` : `/read/${novelMeta.id}?chapter=1`}
+                  className="book-primary-read-btn"
                 >
-                  {nextChapter
-                    ? `Continue to Chapter ${currentChapterIndex + 2}: ${
-                        nextChapter.title
-                      } →`
-                    : "Return to Table of Contents 📖"}
-                </button>
+                  {saved && saved.percentage > 0 ? '▶ Continue Reading' : '▶ Start Reading Book'}
+                </Link>
+
+                {saved && saved.percentage > 0 && (
+                  <button
+                    type="button"
+                    className="book-reset-progress-btn"
+                    onClick={handleResetProgress}
+                  >
+                    Start Over
+                  </button>
+                )}
+              </>
+            ) : (
+              <div className="book-edition-coming-soon-badge">
+                <span className="coming-soon-icon" aria-hidden="true">⏳</span>
+                <span>Text Edition in Preparation — Coming Soon</span>
               </div>
             )}
 
-            {/* Pagination Controls */}
-            <div className="reader-pagination-bar">
-              <button
-                type="button"
-                className="reader-nav-btn"
-                onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={currentPage === 0}
-              >
-                ← Previous Page
-              </button>
-
-              <div className="reader-page-indicator-wrap">
-                <span className="reader-page-indicator-text">
-                  Page {currentPage + 1} of {selectedChapter.pages.length}
-                </span>
-                <div className="reader-page-dots">
-                  {selectedChapter.pages.map((_, dotIdx) => (
-                    <button
-                      key={dotIdx}
-                      type="button"
-                      aria-label={`Jump to page ${dotIdx + 1}`}
-                      className={`reader-page-dot ${
-                        dotIdx === currentPage ? 'active' : ''
-                      }`}
-                      onClick={() => setCurrentPage(dotIdx)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <button
-                type="button"
-                className="reader-nav-btn primary"
-                onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={currentPage === selectedChapter.pages.length - 1}
-              >
-                Next Page →
-              </button>
-            </div>
+            <button
+              type="button"
+              className={`book-favorite-toggle-btn ${isFavorite ? 'active' : ''}`}
+              onClick={toggleFavorite}
+              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              aria-pressed={isFavorite}
+            >
+              <span aria-hidden="true">{isFavorite ? '♥' : '♡'}</span>
+              <span>{isFavorite ? 'Favorited' : 'Add to Favorites'}</span>
+            </button>
           </div>
         </div>
+      </header>
+
+      {/* Table of Contents Section */}
+      <section className="reader-toc-card" aria-label="Table of contents">
+        <div className="reader-toc-header">
+          <h2>Table of Contents</h2>
+          <p>
+            {story
+              ? 'Select any chapter to begin reading immediately on our dedicated reading page.'
+              : 'Chapter titles and overview for this edition.'}
+          </p>
+        </div>
+
+        {story ? (
+          <ul className="reader-chapter-list">
+            {story.chapters.map((chapter, idx) => {
+              const isCurrent = saved && saved.chapterIndex === idx
+              const isCompleted = saved && saved.chapterIndex > idx
+
+              return (
+                <li key={chapter.id}>
+                  <Link
+                    to={`/read/${novelMeta.id}?chapter=${idx + 1}`}
+                    className={`reader-chapter-btn ${isCurrent ? 'is-active-progress' : ''}`}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <div className="reader-chapter-info">
+                      <span className="reader-chapter-num">{idx + 1}</span>
+                      <div>
+                        <span className="reader-chapter-title-text">
+                          {chapter.title}
+                        </span>
+                        {isCurrent && (
+                          <span className="reader-chapter-current-badge">
+                            In Progress (Page {(saved.currentPage || 0) + 1}/{chapter.pages.length})
+                          </span>
+                        )}
+                        {isCompleted && (
+                          <span className="reader-chapter-done-badge">
+                            Completed ✓
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="reader-chapter-right">
+                      <span className="reader-chapter-pages-badge">
+                        {chapter.pages.length} Pages
+                      </span>
+                      <span className="reader-chapter-action">
+                        Read on Dedicated Page →
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        ) : (
+          <div className="edition-notice-box">
+            <p>
+              The digital chapters for <strong>{novelMeta.name}</strong> are currently being formatted.
+              In the meantime, feel free to read other stories from the library below!
+            </p>
+            <Link to="/" className="reader-nav-btn primary" style={{ display: 'inline-block', marginTop: '12px' }}>
+              Explore Available Novels
+            </Link>
+          </div>
+        )}
+      </section>
+
+      {/* Related Novels Section */}
+      {relatedNovels.length > 0 && (
+        <section className="book-related-section" aria-label="Related novels">
+          <div className="section-heading" style={{ padding: 0, margin: '40px 0 20px' }}>
+            <h2 className="section-title" style={{ fontSize: '24px' }}>More {novelMeta.category} Novels</h2>
+            <p>Other popular titles in this genre you might enjoy.</p>
+          </div>
+
+          <ul className="novel-list" style={{ padding: 0 }}>
+            {relatedNovels.map((n) => (
+              <li key={n.id}>
+                <NovelCard
+                  novel={n}
+                  toggleFavorite={() => {}}
+                  favorites={favorites}
+                  progress={getSavedProgress(n.id)}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
     </div>
   )

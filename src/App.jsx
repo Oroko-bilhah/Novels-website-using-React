@@ -1,205 +1,488 @@
-import { useState } from 'react'
-import { Routes, Route, Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect, useMemo, useCallback } from 'react'
+import { Routes, Route, Link, useNavigate, useParams } from 'react-router-dom'
 import './App.css'
 import Novel from './Novel'
+import Reader from './Reader'
 import Fiction from './Fiction'
 import NovelCard from './NovelCard'
+import ContinueReading from './ContinueReading'
+import { novels } from './data/novels'
+import {
+  getSavedFavorites,
+  saveFavorites,
+  getAllSavedProgress,
+  removeNovelProgress,
+} from './utils/readingProgress'
 
-const novels = [
-  {
-    id: 1,
-    name: "The Beauty of Earth",
-    author: "John Doe",
-    description: "A novel about the beauty of our planet.",
-    category: "Fiction",
-    image: "/Novels-website-using-React/Beauty-of-earth.jpg"
-  },
-  {
-    id: 2,
-    name: "The Wonders of Nature",
-    author: "Jane Smith",
-    category: "Science",
-    description: "Discover the incredible wonders of nature.",
-    image: "/Novels-website-using-React/Wonders-of-nature.jpg"
-  },
-  {
-    id: 3,
-    name: "The Love of Humanity",
-    author: "Bob Johnson",
-    category: "Fiction",
-    description: "A story about compassion and humanity.",
-    image: "/Novels-website-using-React/The-love-of-humanity.jpg"
-  },
-  {
-    id: 4,
-    name: "The Power of Imagination",
-    author: "Alice Brown",
-    category: "Fiction",
-    description: "A journey into the power of imagination.",
-    image: "/Novels-website-using-React/The-power-of-imagination.jpg"
-  },
-  {
-    id: 5,
-    name: "The Joy of Storytelling",
-    author: "Charlie Wilson",
-    category: "Fiction",
-    description: "A celebration of stories and the people who tell them.",
-    image: "/Novels-website-using-React/The-joy-of-storytelling.jpg"
-  },
-  {
-    id: 6,
-    name: "The parables of Jesus",
-    author: "John Doe",
-    description: "A book about the parables of Jesus.",
-    category: "Religion",
-    image: "/Novels-website-using-React/The-parables-of-Jesus.jpg"
-  },
-  {
-    id: 7,
-    name: "The Philosophy of Life",
-    author: "Jane Smith",
-    category: "Philosophy",
-    description: "A philosophical exploration of life and existence.",
-    image: "/Novels-website-using-React/The-philosophy-of-life.jpg"
-  },
-  {
-    id: 8,
-    name: "The secret lovers",
-    author: "Alice Brown",
-    category: "Romance",
-    description: "A story about hidden love and its consequences.",
-    image: "/Novels-website-using-React/The-secret-lovers.jpg"
-  }
-]
+// Category options available for filtering
+const CATEGORIES = ['All', 'Fiction', 'Science', 'Philosophy', 'Religion', 'Romance']
 
-function App() {
-  const [selectedCategory, setSelectedCategory] = useState('All')
-  const [favorites, setFavorites] = useState([])
-  const navigate = useNavigate()
+function NovelWrapper() {
+  const { id } = useParams()
+  return <Novel key={id} />
+}
 
-  const filteredNovels = selectedCategory === 'All'
-    ? novels
-    : selectedCategory === 'Favorites'
-    ? novels.filter((novel) => favorites.includes(novel.id))
-    : novels.filter((novel) => novel.category === selectedCategory)
+function ReaderWrapper() {
+  const { id } = useParams()
+  return <Reader key={id} />
+}
 
-  function toggleFavorite(novel) {
-    if (favorites.includes(novel.id)) {
-      setFavorites(favorites.filter(id => id !== novel.id))
-    } else {
-      setFavorites([...favorites, novel.id])
-    }
-  }
-
-  function handleSelectCategory(cat) {
-    setSelectedCategory(cat)
-    navigate('/')
-  }
-
-  const HomePage = () => (
-    <>
-      <section className="hero">
-        <h1>Discover your next story</h1>
+function HomePage({
+  novels,
+  filteredNovels,
+  selectedCategory,
+  setSelectedCategory,
+  searchQuery,
+  setSearchQuery,
+  favorites,
+  toggleFavorite,
+  progressList,
+  progressMap,
+  handleRemoveProgress,
+  handleResetFilters,
+  categoryCounts,
+}) {
+  return (
+    <main>
+      {/* Hero Banner */}
+      <section className="hero" aria-labelledby="hero-heading">
+        <h1 id="hero-heading">Discover your next story</h1>
         <p>Explore novels, find new worlds, and get lost in a good book.</p>
-        <button onClick={() => { document.getElementById('featured')?.scrollIntoView({ behavior: 'smooth' }) }}>
+        <button
+          type="button"
+          onClick={() => {
+            document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })
+          }}
+        >
           Start Exploring
         </button>
       </section>
 
-      <div className="section-heading">
-        <h2 id="featured" className="section-title">Featured Novels</h2>
-        <p>Stories selected to help you find your next great read.</p>
-      </div>
+      {/* Continue Reading Section (Visible when user has stories in progress) */}
+      <ContinueReading
+        progressList={progressList}
+        novels={novels}
+        onRemoveProgress={handleRemoveProgress}
+      />
 
-      <ul className="novel-list">
-        {filteredNovels.map((novel, index) => (
-          <li key={index}>
-            <NovelCard novel={novel} toggleFavorite={toggleFavorite} favorites={favorites} />
-          </li>
-        ))}
-      </ul>
-
-      <section className="categories">
+      {/* Discovery & Search Bar */}
+      <section id="catalog" className="discovery-section" aria-label="Find novels">
         <div className="section-heading">
-          <h2 className="section-title">Browse by Category</h2>
-          <p>Explore stories based on what you're in the mood to read.</p>
+          <h2 className="section-title">Explore Novels</h2>
+          <p>Search by title or author, filter by category, or browse your favorites.</p>
         </div>
 
-        <div className="category-list">
-          <button onClick={() => setSelectedCategory('Romance')}>Romance</button>
-          <button onClick={() => setSelectedCategory('Fiction')}>Fiction</button>
-          <button onClick={() => setSelectedCategory('Philosophy')}>Philosophy</button>
-          <button onClick={() => setSelectedCategory('Science')}>Science</button>
-          <button onClick={() => setSelectedCategory('Religion')}>Religion</button>
-        </div>
-
-        <section className="recent">
-          <div className="section-heading">
-            <h2 className="section-title">Recently Added</h2>
-            <p>Take a look at some of the latest stories on Novella.</p>
+        {/* Search Input Bar */}
+        <div className="search-bar-wrap">
+          <div className="search-input-box">
+            <span className="search-icon" aria-hidden="true">🔍</span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search novels by title or author..."
+              aria-label="Search novels by title or author"
+              className="search-input"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                className="search-clear-btn"
+                onClick={() => setSearchQuery('')}
+                aria-label="Clear search input"
+              >
+                ✕
+              </button>
+            )}
           </div>
 
-          <div className="recent-content">
-            {novels.slice(-3).map((novel) => (
+          {searchQuery && (
+            <div className="search-result-hint" role="status">
+              Found <strong>{filteredNovels.length}</strong> {filteredNovels.length === 1 ? 'novel' : 'novels'} matching &ldquo;{searchQuery}&rdquo;
+            </div>
+          )}
+        </div>
+
+        {/* Category Filter Pills */}
+        <div className="category-list" role="tablist" aria-label="Filter novels by category">
+          {CATEGORIES.map((cat) => {
+            const count = categoryCounts[cat] || 0
+            const isSelected = selectedCategory === cat
+            return (
+              <button
+                key={cat}
+                type="button"
+                role="tab"
+                aria-selected={isSelected}
+                className={`category-pill ${isSelected ? 'active' : ''}`}
+                onClick={() => setSelectedCategory(cat)}
+              >
+                <span>{cat}</span>
+                <span className="category-pill-count">{count}</span>
+              </button>
+            )
+          })}
+          <button
+            type="button"
+            role="tab"
+            aria-selected={selectedCategory === 'Favorites'}
+            className={`category-pill favorites-pill ${selectedCategory === 'Favorites' ? 'active' : ''}`}
+            onClick={() => setSelectedCategory('Favorites')}
+          >
+            <span>♥ Favorites</span>
+            <span className="category-pill-count">{favorites.length}</span>
+          </button>
+        </div>
+      </section>
+
+      {/* Novel Catalog Grid */}
+      <section className="catalog-grid-section" aria-label="Novel catalog">
+        {filteredNovels.length > 0 ? (
+          <ul className="novel-list">
+            {filteredNovels.map((novel) => (
+              <li key={novel.id}>
+                <NovelCard
+                  novel={novel}
+                  toggleFavorite={toggleFavorite}
+                  favorites={favorites}
+                  progress={progressMap[novel.id]}
+                />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          /* Empty States */
+          <div className="catalog-empty-card" role="status">
+            {selectedCategory === 'Favorites' && !searchQuery ? (
+              <>
+                <div className="empty-state-icon" aria-hidden="true">♡</div>
+                <h3 className="empty-state-title">No Favorites Saved Yet</h3>
+                <p className="empty-state-text">
+                  You haven&apos;t added any novels to your favorites list yet. Click the heart icon on any story to save it for easy access anytime!
+                </p>
+                <button
+                  type="button"
+                  className="empty-state-btn primary"
+                  onClick={() => setSelectedCategory('All')}
+                >
+                  Explore All Novels
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="empty-state-icon" aria-hidden="true">🔍</div>
+                <h3 className="empty-state-title">No Novels Found</h3>
+                <p className="empty-state-text">
+                  We couldn&apos;t find any stories matching your criteria
+                  {searchQuery && <span> for &ldquo;<strong>{searchQuery}</strong>&rdquo;</span>}
+                  {selectedCategory !== 'All' && <span> in <strong>{selectedCategory}</strong></span>}.
+                </p>
+                <button
+                  type="button"
+                  className="empty-state-btn primary"
+                  onClick={handleResetFilters}
+                >
+                  Reset Search &amp; Filters
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </section>
+
+      {/* Recently Added Section */}
+      <section className="recent" aria-labelledby="recently-added-heading">
+        <div className="section-heading">
+          <h2 id="recently-added-heading" className="section-title">Recently Added</h2>
+          <p>Fresh additions and latest releases in the Novella library.</p>
+        </div>
+
+        <ul className="recent-content">
+          {novels.slice(-4).map((novel) => (
+            <li key={novel.id}>
               <NovelCard
-                key={novel.id}
                 novel={novel}
                 toggleFavorite={toggleFavorite}
                 favorites={favorites}
+                progress={progressMap[novel.id]}
               />
-            ))}
-          </div>
-        </section>
+            </li>
+          ))}
+        </ul>
       </section>
-    </>
+    </main>
   )
+}
+
+function App() {
+  const [selectedCategory, setSelectedCategory] = useState('All')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [favorites, setFavorites] = useState(() => getSavedFavorites())
+  const [progressList, setProgressList] = useState(() => getAllSavedProgress())
+  const navigate = useNavigate()
+
+  // Refresh progress state whenever returning to page or focusing
+  const refreshProgress = useCallback(() => {
+    setProgressList(getAllSavedProgress())
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener('focus', refreshProgress)
+    window.addEventListener('storage', refreshProgress)
+    window.addEventListener('novella-progress-update', refreshProgress)
+    return () => {
+      window.removeEventListener('focus', refreshProgress)
+      window.removeEventListener('storage', refreshProgress)
+      window.removeEventListener('novella-progress-update', refreshProgress)
+    }
+  }, [refreshProgress])
+
+  // Persist favorites to localStorage
+  const toggleFavorite = (novel) => {
+    setFavorites((prev) => {
+      const nextFavorites = prev.includes(novel.id)
+        ? prev.filter((id) => id !== novel.id)
+        : [...prev, novel.id]
+      saveFavorites(nextFavorites)
+      return nextFavorites
+    })
+  }
+
+  const handleRemoveProgress = (novelId) => {
+    removeNovelProgress(novelId)
+    setProgressList(getAllSavedProgress())
+  }
+
+  const handleSelectCategory = (cat) => {
+    setSelectedCategory(cat)
+    navigate('/')
+  }
+
+  const handleResetFilters = () => {
+    setSelectedCategory('All')
+    setSearchQuery('')
+  }
+
+  // Pre-calculate progress map for fast card lookup
+  const progressMap = useMemo(() => {
+    const map = {}
+    progressList.forEach((item) => {
+      map[item.novelId] = item
+    })
+    return map
+  }, [progressList])
+
+  // Calculate book counts per category across all 38 books
+  const categoryCounts = useMemo(() => {
+    const counts = { All: novels.length }
+    CATEGORIES.forEach((cat) => {
+      if (cat !== 'All') {
+        counts[cat] = novels.filter((n) => n.category === cat).length
+      }
+    })
+    return counts
+  }, [])
+
+  // Filter novels by search query and category
+  const filteredNovels = useMemo(() => {
+    return novels.filter((novel) => {
+      // Category filter
+      let matchesCategory = true
+      if (selectedCategory === 'Favorites') {
+        matchesCategory = favorites.includes(novel.id)
+      } else if (selectedCategory !== 'All') {
+        matchesCategory = novel.category === selectedCategory
+      }
+
+      // Search query filter (matches title or author)
+      let matchesSearch = true
+      if (searchQuery.trim()) {
+        const query = searchQuery.trim().toLowerCase()
+        const matchesName = novel.name.toLowerCase().includes(query)
+        const matchesAuthor = novel.author.toLowerCase().includes(query)
+        const matchesCategoryName = novel.category?.toLowerCase().includes(query)
+        matchesSearch = matchesName || matchesAuthor || matchesCategoryName
+      }
+
+      return matchesCategory && matchesSearch
+    })
+  }, [selectedCategory, searchQuery, favorites])
 
   return (
     <div className="App">
-      <nav className="nav">
-        <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+      {/* Main Top Navigation */}
+      <nav className="nav" aria-label="Main Navigation">
+        <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }} aria-label="Novella Home">
           <h2 className="logo">NOVELLA</h2>
         </Link>
+
         <ul className="nav-links">
-          <li><button onClick={() => handleSelectCategory('All')}>All</button></li>
-          <li><button onClick={() => handleSelectCategory('Religion')}>Religion</button></li>
-          <li><button onClick={() => handleSelectCategory('Science')}>Science</button></li>
-          <li><button onClick={() => handleSelectCategory('Romance')}>Romance</button></li>
-          <li><button onClick={() => handleSelectCategory('Fiction')}>Fiction</button></li>
-          <li><button onClick={() => handleSelectCategory('Philosophy')}>Philosophy</button></li>
-          <li><button onClick={() => handleSelectCategory('Favorites')}>Favorites</button></li>
+          <li>
+            <button
+              type="button"
+              className={selectedCategory === 'All' ? 'nav-active' : ''}
+              onClick={() => handleSelectCategory('All')}
+            >
+              All
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              className={selectedCategory === 'Fiction' ? 'nav-active' : ''}
+              onClick={() => handleSelectCategory('Fiction')}
+            >
+              Fiction
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              className={selectedCategory === 'Science' ? 'nav-active' : ''}
+              onClick={() => handleSelectCategory('Science')}
+            >
+              Science
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              className={selectedCategory === 'Philosophy' ? 'nav-active' : ''}
+              onClick={() => handleSelectCategory('Philosophy')}
+            >
+              Philosophy
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              className={selectedCategory === 'Religion' ? 'nav-active' : ''}
+              onClick={() => handleSelectCategory('Religion')}
+            >
+              Religion
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              className={selectedCategory === 'Romance' ? 'nav-active' : ''}
+              onClick={() => handleSelectCategory('Romance')}
+            >
+              Romance
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              className={`nav-fav-btn ${selectedCategory === 'Favorites' ? 'nav-active' : ''}`}
+              onClick={() => handleSelectCategory('Favorites')}
+              aria-label={`View ${favorites.length} saved favorites`}
+            >
+              Favorites {favorites.length > 0 && <span className="nav-fav-badge">{favorites.length}</span>}
+            </button>
+          </li>
         </ul>
       </nav>
 
+      {/* Routes: Each view renders on its own separate page! */}
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/novel/:id" element={<Novel />} />
-        <Route path="/Fiction" element={<Fiction />} />
-        <Route path="*" element={<HomePage />} />
+        <Route
+          path="/"
+          element={
+            <HomePage
+              novels={novels}
+              filteredNovels={filteredNovels}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              progressList={progressList}
+              progressMap={progressMap}
+              handleRemoveProgress={handleRemoveProgress}
+              handleResetFilters={handleResetFilters}
+              categoryCounts={categoryCounts}
+            />
+          }
+        />
+        <Route path="/novel/:id" element={<NovelWrapper />} />
+        <Route path="/read/:id" element={<ReaderWrapper />} />
+        <Route path="/novel/:id/read" element={<ReaderWrapper />} />
+        <Route
+          path="/Fiction"
+          element={
+            <Fiction
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+            />
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <HomePage
+              novels={novels}
+              filteredNovels={filteredNovels}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              progressList={progressList}
+              progressMap={progressMap}
+              handleRemoveProgress={handleRemoveProgress}
+              handleResetFilters={handleResetFilters}
+              categoryCounts={categoryCounts}
+            />
+          }
+        />
       </Routes>
 
-      <footer className="footer">
+      {/* Footer */}
+      <footer className="footer" role="contentinfo">
         <div className="footer-content">
           <div className="footer-brand">
             <h2>NOVELLA</h2>
             <p>
-              Discover stories, explore new worlds,
-              and find your next favorite read.
+              Discover stories, explore new worlds, and find your next favorite read.
+              Your reading progress is automatically saved so you never lose your place.
             </p>
           </div>
 
           <div className="footer-links">
             <h3>Explore</h3>
-            <Link to="/">Home</Link>
-            <Link to="/romance" onClick={() => setSelectedCategory('Romance')}>Romance</Link>
-            <Link to="/Fiction">Fiction</Link>
-            <Link to="/science" onClick={() => setSelectedCategory('Science')}>Science</Link>
+            <Link to="/">Library Home</Link>
+            <Link to="/Fiction">Fiction Showcase</Link>
+            <button
+              type="button"
+              className="footer-link-btn"
+              onClick={() => handleSelectCategory('Science')}
+            >
+              Science Novels
+            </button>
+            <button
+              type="button"
+              className="footer-link-btn"
+              onClick={() => handleSelectCategory('Romance')}
+            >
+              Romance Novels
+            </button>
           </div>
 
           <div className="footer-links">
-            <h3>About</h3>
-            <a href="#about">About Us</a>
-            <a href="#contact">Contact</a>
+            <h3>Reading Tools</h3>
+            <button
+              type="button"
+              className="footer-link-btn"
+              onClick={() => handleSelectCategory('Favorites')}
+            >
+              Saved Favorites ({favorites.length})
+            </button>
+            <a href="#catalog" onClick={() => window.scrollTo({ top: 400, behavior: 'smooth' })}>
+              Search Library
+            </a>
           </div>
         </div>
 
